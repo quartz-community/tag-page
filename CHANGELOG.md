@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1
+
+### Patch Changes
+
+- 6977c9a: On the tag index, a tag with child tags and a hand-written `tags/<tag>.md` page links to that page instead of the virtual `tags/<tag>/` page it replaces, which was never emitted (a broken link).
+- d1bec5e: Tags that have child tags (e.g. `kubernetes` with `kubernetes/k3s`) are now emitted as `tags/<tag>/index.html` instead of `tags/<tag>.html`, so the parent tag page is reachable on static hosts that resolve the `tags/<tag>/` directory first (jackyzha0/quartz#2556). Leaf tag URLs are unchanged.
+
 ## 1.0.0
 
 ### Major Changes
