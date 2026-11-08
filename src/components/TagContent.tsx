@@ -112,7 +112,9 @@ export default ((opts?: Partial<TagContentOptions>) => {
               const tagDesc =
                 !root || root.children.length === 0 ? contentPage?.description : htmlToJsx(root);
 
-              const tagListingPage = tagPageSlug(t, tags) as FullSlug;
+              // A hand-written tag page is linked where it is: at `tags/<tag>` it replaces the
+              // virtual `tags/<tag>/index`, which is then never emitted (the docs' `tags/plugin`).
+              const tagListingPage = (contentPage?.slug ?? tagPageSlug(t, tags)) as FullSlug;
               const href = resolveRelative(slug as FullSlug, tagListingPage);
 
               return (
