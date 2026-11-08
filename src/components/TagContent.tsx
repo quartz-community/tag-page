@@ -10,6 +10,7 @@ import { htmlToJsx } from "@quartz-community/utils/jsx";
 import type { ComponentChildren } from "preact";
 import type { Root } from "hast";
 import { i18n } from "../i18n";
+import { tagPageSlug } from "../util/tags";
 import { getAllSegmentPrefixes, resolveRelative, simplifySlug } from "../util/path";
 import type { FullSlug } from "../util/path";
 import style from "./styles/listPage.scss";
@@ -49,7 +50,9 @@ export default ((opts?: Partial<TagContentOptions>) => {
       throw new Error(`Component "TagContent" tried to render a non-tag page: ${slug}`);
     }
 
-    const tag = simplifySlug(slug.slice("tags/".length) as FullSlug);
+    // `tags/<tag>/index` (tags with child tags) → `<tag>`; `tags/index` → "/"
+    let tag: string = simplifySlug(slug.slice("tags/".length) as FullSlug);
+    if (tag !== "/" && tag.endsWith("/")) tag = tag.slice(0, -1);
     const allPagesWithTag = (t: string) =>
       (allFiles as PageFileData[])
         .filter(isListed)
@@ -100,7 +103,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
               }) as unknown as ComponentChildren;
 
               const contentPage = (allFiles as PageFileData[]).find(
-                (file) => file.slug === `tags/${t}`,
+                (file) => file.slug === `tags/${t}` || file.slug === `tags/${t}/index`,
               );
 
               // Virtual pages have htmlAst pre-rendered by the dispatcher (contains the full
@@ -109,7 +112,9 @@ export default ((opts?: Partial<TagContentOptions>) => {
               const tagDesc =
                 !root || root.children.length === 0 ? contentPage?.description : htmlToJsx(root);
 
-              const tagListingPage = `/tags/${t}` as FullSlug;
+              // A hand-written tag page is linked where it is: at `tags/<tag>` it replaces the
+              // virtual `tags/<tag>/index`, which is then never emitted (the docs' `tags/plugin`).
+              const tagListingPage = (contentPage?.slug ?? tagPageSlug(t, tags)) as FullSlug;
               const href = resolveRelative(slug as FullSlug, tagListingPage);
 
               return (

@@ -7,6 +7,7 @@ import type {
 import TagContentComponent from "./components/TagContent";
 import { i18n } from "./i18n";
 import { getAllSegmentPrefixes, joinSegments } from "./util/path";
+import { tagPageSlug } from "./util/tags";
 import type { SortFn } from "./components/PageList";
 
 export interface TagPageOptions {
@@ -48,8 +49,13 @@ export const TagPage: QuartzPageTypePlugin<TagPageOptions> = (opts) => ({
 
     const virtualPages: VirtualPage[] = [];
     for (const tag of tags) {
-      const slug = joinSegments("tags", tag) as unknown as FullSlug;
-      if (existingTagSlugs.has(slug as string)) continue;
+      const slug = tagPageSlug(tag, tags) as unknown as FullSlug;
+      if (
+        existingTagSlugs.has(joinSegments("tags", tag)) ||
+        existingTagSlugs.has(joinSegments("tags", tag, "index"))
+      ) {
+        continue;
+      }
 
       const title =
         tag === "index"
