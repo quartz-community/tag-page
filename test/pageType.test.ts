@@ -29,6 +29,8 @@ function generate(
     cfg: { locale: "en-US" } as never,
     ctx: {} as never,
   });
+  // `generate` may return a promise (types 1.2); TagPage's is synchronous
+  if (pages instanceof Promise) throw new Error("TagPage.generate returned a promise");
   return pages.map((p) => ({ slug: String(p.slug), title: p.title }));
 }
 
