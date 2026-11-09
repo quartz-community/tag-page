@@ -74,5 +74,7 @@ export const TagPage: QuartzPageTypePlugin<TagPageOptions> = (opts) => ({
     return virtualPages;
   },
   layout: "tag",
-  body: TagContentComponent,
+  // Quartz calls body(undefined): pass this plugin's options through, or numPages and sort
+  // never reach the tag listing
+  body: () => TagContentComponent(opts),
 });
