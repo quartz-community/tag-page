@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.5
+
+### Patch Changes
+
+- 56dd9d8: The manifest declares the `prefixTags` option (default `false`), so option checks and Quartz Syncer know it.
+
 ## 1.0.4
 
 ### Patch Changes
