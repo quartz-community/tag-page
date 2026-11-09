@@ -1,6 +1,6 @@
 {
   "name": "@quartz-community/tag-page",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Tag page type plugin for Quartz.",
   "type": "module",
   "license": "MIT",
