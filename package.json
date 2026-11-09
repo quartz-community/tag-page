@@ -102,11 +102,15 @@
     "defaultOrder": 50,
     "defaultEnabled": true,
     "defaultOptions": {
-      "numPages": 10
+      "numPages": 10,
+      "prefixTags": false
     },
     "optionSchema": {
       "numPages": {
         "type": "number"
+      },
+      "prefixTags": {
+        "type": "boolean"
       }
     }
   },
