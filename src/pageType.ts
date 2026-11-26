@@ -3,6 +3,7 @@ import type {
   PageMatcher,
   FullSlug,
   VirtualPage,
+  ProcessedContent,
 } from "@quartz-community/types";
 import TagContentComponent from "./components/TagContent";
 import { i18n } from "./i18n";
@@ -25,8 +26,13 @@ export const TagPage: QuartzPageTypePlugin<TagPageOptions> = (opts) => ({
   name: "TagPage",
   priority: 10,
   match: tagMatcher,
-  generate({ content, cfg }) {
-    const allFiles = content
+  generate({ content, cfg, ctx }) {
+    // Pages of the page types that ran before this one (Quartz runs them by priority, tag pages
+    // last) have tags too, e.g. a canvas's text nodes' `#tags` (canvas-page): their tags get
+    // pages as well, which list them (the listing sees every page).
+    const earlierPages =
+      (ctx as { virtualPages?: ProcessedContent[] } | undefined)?.virtualPages ?? [];
+    const allFiles = [...content, ...earlierPages]
       .map((c) => c[1].data)
       .filter((d) => (d as { unlisted?: unknown } | undefined)?.unlisted !== true);
     const locale = (cfg as { locale?: string } | undefined)?.locale ?? "en-US";

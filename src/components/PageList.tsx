@@ -46,6 +46,11 @@ function DateDisplay({ date, locale }: DateComponentProps) {
 type PageListProps = {
   limit?: number;
   sort?: SortFn;
+  /**
+   * The level of each entry's heading: 2 (default) under the page's `h1`, 3 under a tag's `h2`
+   * on the tag index. Entries look the same at either level.
+   */
+  headingLevel?: 2 | 3;
 } & QuartzComponentProps;
 
 export const PageList: QuartzComponent = ({
@@ -54,7 +59,9 @@ export const PageList: QuartzComponent = ({
   allFiles,
   limit,
   sort,
+  headingLevel = 2,
 }: PageListProps) => {
+  const Heading = headingLevel === 3 ? "h3" : "h2";
   const sorter = sort ?? byDateAndAlphabeticalFolderFirst(cfg);
   let list = [...allFiles].sort(sorter);
   if (limit) {
@@ -81,14 +88,14 @@ export const PageList: QuartzComponent = ({
                 )}
               </p>
               <div class="desc">
-                <h2>
+                <Heading>
                   <a
                     href={resolveRelative(fileSlug ?? ("" as FullSlug), page.slug as FullSlug)}
                     class="internal"
                   >
                     {title}
                   </a>
-                </h2>
+                </Heading>
               </div>
               <ul class="tags">
                 {tags.map((tag) => (
@@ -114,8 +121,10 @@ export const PageList: QuartzComponent = ({
 };
 
 PageList.css = `
-/* An h2 under the page's h1 (it was an h3, which skipped a level), at the h3's size. */
-.section h2 {
+/* An h2 under the page's h1 (it was an h3, which skipped a level), at the h3's size; an h3
+   under a tag's h2 on the tag index. */
+.section h2,
+.section h3 {
   margin: 0;
   font-size: 1.12rem;
 }

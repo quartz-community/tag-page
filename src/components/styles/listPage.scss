@@ -17,7 +17,8 @@ li.section-li {
       }
     }
 
-    & > .desc > h2 > a {
+    & > .desc > h2 > a,
+    & > .desc > h3 > a {
       background-color: transparent;
     }
 

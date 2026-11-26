@@ -54,3 +54,40 @@ describe("tag index headings", () => {
     expect(links).not.toContain("../tags/plugin/");
   });
 });
+
+/** The heading tags in a rendered vnode tree, in order, with the text of their link. */
+function headings(node: unknown, out: string[] = []): string[] {
+  if (Array.isArray(node)) {
+    node.forEach((n) => headings(n, out));
+    return out;
+  }
+  if (!node || typeof node !== "object" || !("props" in node)) return out;
+  const v = node as VNode;
+  if (typeof v.type === "string" && /^h[1-6]$/.test(v.type)) {
+    const link = ([] as unknown[])
+      .concat(v.props.children)
+      .find((c): c is VNode => !!c && typeof c === "object" && (c as VNode).type === "a");
+    out.push(`${v.type}:${String(link?.props.children ?? "")}`);
+  }
+  headings(v.props.children, out);
+  return out;
+}
+
+describe("tag index heading levels", () => {
+  it("puts each tag's pages one level below the tag's h2", () => {
+    const tree = renderTagIndex([page("notes/a", ["alpha"]), page("notes/b", ["beta"])]);
+    expect(headings(tree)).toEqual(["h2:alpha", "h3:notes/a", "h2:beta", "h3:notes/b"]);
+  });
+
+  it("keeps a single tag's pages at h2, under the page's h1", () => {
+    const TagContent = TagContentConstructor();
+    const tree = TagContent({
+      tree: { type: "root", children: [] },
+      fileData: { slug: "tags/alpha", frontmatter: { title: "alpha" } },
+      allFiles: [page("notes/a", ["alpha"])],
+      cfg: { locale: "en-US" },
+      displayClass: undefined,
+    } as never);
+    expect(headings(tree)).toEqual(["h2:notes/a"]);
+  });
+});

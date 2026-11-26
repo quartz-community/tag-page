@@ -21,13 +21,14 @@ function makeProcessedContent(
 function generate(
   plugin: ReturnType<typeof TagPage>,
   content: ProcessedContent[],
+  virtualPages: ProcessedContent[] = [],
 ): { slug: string; title: string }[] {
   const generateFn = plugin.generate;
   if (!generateFn) throw new Error("TagPage.generate is undefined");
   const pages = generateFn({
     content,
     cfg: { locale: "en-US" } as never,
-    ctx: {} as never,
+    ctx: { virtualPages } as never,
   });
   // `generate` may return a promise (types 1.2); TagPage's is synchronous
   if (pages instanceof Promise) throw new Error("TagPage.generate returned a promise");
@@ -35,6 +36,21 @@ function generate(
 }
 
 describe("TagPage pageType generate", () => {
+  it("discovers tags from the pages of page types that ran before it (canvas text nodes)", () => {
+    const virtualPages = generate(
+      TagPage(),
+      [makeProcessedContent("notes/a", { tags: ["public"] })],
+      [
+        makeProcessedContent("board.canvas", { tags: ["canvastag/nested"] }),
+        makeProcessedContent("hidden.canvas", { tags: ["secret"], unlisted: true }),
+      ],
+    );
+    const slugs = virtualPages.map((p) => p.slug);
+    expect(slugs).toContain("tags/canvastag/index");
+    expect(slugs).toContain("tags/canvastag/nested");
+    expect(slugs).not.toContain("tags/secret");
+  });
+
   it("discovers tags from listed pages", () => {
     const plugin = TagPage();
     const virtualPages = generate(plugin, [
