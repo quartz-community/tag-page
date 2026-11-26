@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.6
+
+### Patch Changes
+
+- 41b968e: Page list entries are `h2` headings under the page's `h1`; they were `h3`, which skipped a level for screen readers. They keep the `h3` size, so lists look the same. Dates are at 80% opacity instead of 60%, the lowest that keeps 4.5:1 contrast (WCAG AA) in light and dark mode.
+
 ## 1.0.5
 
 ### Patch Changes
