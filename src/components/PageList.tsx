@@ -81,14 +81,14 @@ export const PageList: QuartzComponent = ({
                 )}
               </p>
               <div class="desc">
-                <h3>
+                <h2>
                   <a
                     href={resolveRelative(fileSlug ?? ("" as FullSlug), page.slug as FullSlug)}
                     class="internal"
                   >
                     {title}
                   </a>
-                </h3>
+                </h2>
               </div>
               <ul class="tags">
                 {tags.map((tag) => (
@@ -114,8 +114,10 @@ export const PageList: QuartzComponent = ({
 };
 
 PageList.css = `
-.section h3 {
+/* An h2 under the page's h1 (it was an h3, which skipped a level), at the h3's size. */
+.section h2 {
   margin: 0;
+  font-size: 1.12rem;
 }
 
 .section > .tags {

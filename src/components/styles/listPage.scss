@@ -17,13 +17,14 @@ li.section-li {
       }
     }
 
-    & > .desc > h3 > a {
+    & > .desc > h2 > a {
       background-color: transparent;
     }
 
     & .meta {
       margin: 0 1em 0 0;
-      opacity: 0.6;
+      // The lowest opacity that keeps 4.5:1 contrast in both default palettes.
+      opacity: 0.8;
     }
   }
 }
