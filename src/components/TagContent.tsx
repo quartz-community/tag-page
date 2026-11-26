@@ -96,10 +96,12 @@ export default ((opts?: Partial<TagContentOptions>) => {
                 ...props,
                 allFiles: pages,
               };
+              // under the tag's h2
               const pageListContent = PageList({
                 ...listProps,
                 limit: options.numPages,
                 sort: options?.sort,
+                headingLevel: 3,
               }) as unknown as ComponentChildren;
 
               const contentPage = (allFiles as PageFileData[]).find(
