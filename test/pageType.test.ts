@@ -123,6 +123,50 @@ describe("TagPage pageType generate", () => {
   });
 });
 
+describe("TagPage pageType generate without earlier page types", () => {
+  const content = [
+    makeProcessedContent("notes/a", { tags: ["alpha", "beta/gamma"] }),
+    makeProcessedContent("notes/b", { tags: ["alpha"] }),
+  ];
+  const expected = [
+    { slug: "tags/alpha", title: "alpha" },
+    { slug: "tags/beta/index", title: "beta" },
+    { slug: "tags/beta/gamma", title: "beta/gamma" },
+    { slug: "tags/index", title: "Tag Index" },
+  ];
+
+  function generateWithCtx(ctx: unknown) {
+    const pages = TagPage().generate!({
+      content,
+      cfg: { locale: "en-US" } as never,
+      ctx: ctx as never,
+    });
+    if (pages instanceof Promise) throw new Error("TagPage.generate returned a promise");
+    return pages.map((p) => ({ slug: String(p.slug), title: p.title }));
+  }
+
+  it("generates the content-only tag pages when ctx has no virtualPages", () => {
+    expect(generateWithCtx({})).toEqual(expected);
+    expect(generate(TagPage(), content)).toEqual(expected);
+  });
+
+  it("does not throw when ctx itself is undefined", () => {
+    expect(generateWithCtx(undefined)).toEqual(expected);
+  });
+});
+
+describe("TagPage pageType generate with a tag on a note and a canvas", () => {
+  it("emits exactly one page for the shared tag", () => {
+    const slugs = generate(
+      TagPage(),
+      [makeProcessedContent("notes/a", { tags: ["shared"] })],
+      [makeProcessedContent("board.canvas", { tags: ["shared"] })],
+    ).map((p) => p.slug);
+    expect(slugs.filter((s) => s === "tags/shared")).toHaveLength(1);
+    expect(slugs).toEqual(["tags/shared", "tags/index"]);
+  });
+});
+
 describe("tagPageSlug", () => {
   const all = ["a", "a/b", "a/b/c", "ab", "index"];
   it("uses a directory index only for tags with children", () => {
